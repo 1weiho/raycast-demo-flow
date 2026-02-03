@@ -301,6 +301,7 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
                 title="Delete Snippet"
                 icon={Icon.Trash}
                 style={Action.Style.Destructive}
+                shortcut={{ modifiers: ["ctrl"], key: "x" }}
                 onAction={async () => {
                   if (!demo) {
                     return;
@@ -328,6 +329,7 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
               <Action
                 title="Move Up"
                 icon={Icon.ArrowUp}
+                shortcut={{ modifiers: ["opt", "cmd"], key: "arrowUp" }}
                 onAction={async () => {
                   if (!demo || index === 0) {
                     return;
@@ -341,6 +343,7 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
               <Action
                 title="Move Down"
                 icon={Icon.ArrowDown}
+                shortcut={{ modifiers: ["opt", "cmd"], key: "arrowDown" }}
                 onAction={async () => {
                   if (!demo || index === demo.snippets.length - 1) {
                     return;
