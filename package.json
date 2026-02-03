@@ -18,7 +18,31 @@
       "name": "manage-demo-snippets",
       "title": "Manage Demo Snippets",
       "description": "",
+      "mode": "view"
+    },
+    {
+      "name": "next-snippet",
+      "title": "Next Snippet",
+      "description": "",
       "mode": "no-view"
+    },
+    {
+      "name": "previous-snippet",
+      "title": "Previous Snippet",
+      "description": "",
+      "mode": "no-view"
+    },
+    {
+      "name": "menu-bar",
+      "title": "Demo Snippet Menu Bar",
+      "description": "",
+      "mode": "menu-bar"
+    },
+    {
+      "name": "import-demo-snippet",
+      "title": "Import Demo Snippet",
+      "description": "",
+      "mode": "view"
     }
   ],
   "dependencies": {
