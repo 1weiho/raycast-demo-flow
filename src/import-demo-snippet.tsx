@@ -106,6 +106,7 @@ function normalizeImport(payload: unknown, existing: Demo[]): Demo[] {
       id: randomUUID(),
       name,
       snippets,
+      pinned: false,
       createdAt: now,
       updatedAt: now,
     });

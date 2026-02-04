@@ -37,98 +37,173 @@ export default function ManageDemoSnippets() {
   }, []);
 
   const activeDemoId = activeState?.demoId ?? null;
+  const { pinnedDemos, unpinnedDemos, pinnedCount, orderedDemos } = useMemo(() => {
+    const pinned: Demo[] = [];
+    const unpinned: Demo[] = [];
+    for (const demo of demos) {
+      if (demo.pinned) {
+        pinned.push(demo);
+      } else {
+        unpinned.push(demo);
+      }
+    }
+    return {
+      pinnedDemos: pinned,
+      unpinnedDemos: unpinned,
+      pinnedCount: pinned.length,
+      orderedDemos: [...pinned, ...unpinned],
+    };
+  }, [demos]);
+
+  const renderDemoItem = (demo: Demo, index: number) => {
+    const accessories = activeDemoId === demo.id ? [{ icon: Icon.Play, tooltip: "Active Demo" }] : [];
+    const isPinned = Boolean(demo.pinned);
+    const groupIndex = isPinned ? index : index - pinnedCount;
+    const groupSize = isPinned ? pinnedCount : orderedDemos.length - pinnedCount;
+
+    return (
+      <List.Item
+        key={demo.id}
+        title={demo.name}
+        subtitle={`${demo.snippets.length} snippet${demo.snippets.length === 1 ? "" : "s"}`}
+        accessories={accessories.length > 0 ? accessories : undefined}
+        actions={
+          <ActionPanel>
+            <Action.Push
+              title="Open Demo"
+              icon={Icon.List}
+              target={<DemoSnippetsView demoId={demo.id} onUpdate={refresh} />}
+            />
+            <Action
+              title={activeDemoId === demo.id ? "Stop Demo" : "Start Demo"}
+              icon={activeDemoId === demo.id ? Icon.Stop : Icon.Play}
+              onAction={async () => {
+                if (activeDemoId === demo.id) {
+                  await clearActiveState();
+                  await refresh();
+                  await showToast({ style: Toast.Style.Success, title: "Demo stopped" });
+                  return;
+                }
+                await setActiveState({ demoId: demo.id, index: 0 });
+                await refresh();
+                await showToast({ style: Toast.Style.Success, title: "Demo started" });
+              }}
+            />
+            <Action.Push
+              title="Create Demo"
+              icon={Icon.Plus}
+              shortcut={{ modifiers: ["cmd"], key: "n" }}
+              target={<DemoForm mode="create" demos={demos} onSave={refresh} />}
+            />
+            <Action
+              title={demo.pinned ? "Unpin Demo" : "Pin Demo"}
+              icon={Icon.Pin}
+              onAction={async () => {
+                const now = Date.now();
+                const updated = orderedDemos.map((item) =>
+                  item.id === demo.id ? { ...item, pinned: !item.pinned, updatedAt: now } : item,
+                );
+                await saveDemos(orderDemos(updated));
+                await refresh();
+                await showToast({
+                  style: Toast.Style.Success,
+                  title: demo.pinned ? "Demo unpinned" : "Demo pinned",
+                });
+              }}
+            />
+            <Action
+              title="Move up"
+              icon={Icon.ArrowUp}
+              shortcut={{ modifiers: ["opt", "cmd"], key: "arrowUp" }}
+              onAction={async () => {
+                if (groupIndex <= 0) {
+                  return;
+                }
+                const updated = moveDemo(orderedDemos, index, index - 1);
+                await saveDemos(updated);
+                await refresh();
+              }}
+            />
+            <Action
+              title="Move Down"
+              icon={Icon.ArrowDown}
+              shortcut={{ modifiers: ["opt", "cmd"], key: "arrowDown" }}
+              onAction={async () => {
+                if (groupIndex >= groupSize - 1) {
+                  return;
+                }
+                const updated = moveDemo(orderedDemos, index, index + 1);
+                await saveDemos(updated);
+                await refresh();
+              }}
+            />
+            <Action.Push
+              title="Rename Demo"
+              icon={Icon.Pencil}
+              target={<DemoForm mode="rename" demo={demo} demos={demos} onSave={refresh} />}
+            />
+            <Action
+              title="Export Demo"
+              icon={Icon.Download}
+              onAction={async () => {
+                try {
+                  const outputPath = await exportDemoToFile(demo);
+                  await showToast({
+                    style: Toast.Style.Success,
+                    title: "Exported demo",
+                    message: outputPath,
+                  });
+                } catch (error) {
+                  await showToast({
+                    style: Toast.Style.Failure,
+                    title: "Failed to export demo",
+                    message: String(error),
+                  });
+                }
+              }}
+            />
+            <Action
+              title="Delete Demo"
+              icon={Icon.Trash}
+              style={Action.Style.Destructive}
+              shortcut={{ modifiers: ["ctrl"], key: "x" }}
+              onAction={async () => {
+                const shouldDelete = await confirmAlert({
+                  title: "Delete demo",
+                  message: `Delete "${demo.name}"? This cannot be undone.`,
+                  primaryAction: {
+                    title: "Delete",
+                    style: Alert.ActionStyle.Destructive,
+                  },
+                });
+                if (!shouldDelete) {
+                  return;
+                }
+                const updated = demos.filter((item) => item.id !== demo.id);
+                await saveDemos(orderDemos(updated));
+                if (activeDemoId === demo.id) {
+                  await clearActiveState();
+                }
+                await refresh();
+                await showToast({ style: Toast.Style.Success, title: "Demo deleted" });
+              }}
+            />
+          </ActionPanel>
+        }
+      />
+    );
+  };
 
   return (
     <List isLoading={isLoading} searchBarPlaceholder="Search demos">
-      {demos.map((demo) => (
-        <List.Item
-          key={demo.id}
-          title={demo.name}
-          subtitle={`${demo.snippets.length} snippet${demo.snippets.length === 1 ? "" : "s"}`}
-          accessories={activeDemoId === demo.id ? [{ icon: Icon.Play, tooltip: "Active Demo" }] : undefined}
-          actions={
-            <ActionPanel>
-              <Action.Push
-                title="Open Demo"
-                icon={Icon.List}
-                target={<DemoSnippetsView demoId={demo.id} onUpdate={refresh} />}
-              />
-              <Action
-                title={activeDemoId === demo.id ? "Stop Demo" : "Start Demo"}
-                icon={activeDemoId === demo.id ? Icon.Stop : Icon.Play}
-                onAction={async () => {
-                  if (activeDemoId === demo.id) {
-                    await clearActiveState();
-                    await refresh();
-                    await showToast({ style: Toast.Style.Success, title: "Demo stopped" });
-                    return;
-                  }
-                  await setActiveState({ demoId: demo.id, index: 0 });
-                  await refresh();
-                  await showToast({ style: Toast.Style.Success, title: "Demo started" });
-                }}
-              />
-              <Action.Push
-                title="Create Demo"
-                icon={Icon.Plus}
-                shortcut={{ modifiers: ["cmd"], key: "n" }}
-                target={<DemoForm mode="create" demos={demos} onSave={refresh} />}
-              />
-              <Action.Push
-                title="Rename Demo"
-                icon={Icon.Pencil}
-                target={<DemoForm mode="rename" demo={demo} demos={demos} onSave={refresh} />}
-              />
-              <Action
-                title="Export Demo"
-                icon={Icon.Download}
-                onAction={async () => {
-                  try {
-                    const outputPath = await exportDemoToFile(demo);
-                    await showToast({
-                      style: Toast.Style.Success,
-                      title: "Exported demo",
-                      message: outputPath,
-                    });
-                  } catch (error) {
-                    await showToast({
-                      style: Toast.Style.Failure,
-                      title: "Failed to export demo",
-                      message: String(error),
-                    });
-                  }
-                }}
-              />
-              <Action
-                title="Delete Demo"
-                icon={Icon.Trash}
-                style={Action.Style.Destructive}
-                shortcut={{ modifiers: ["ctrl"], key: "x" }}
-                onAction={async () => {
-                  const shouldDelete = await confirmAlert({
-                    title: "Delete demo",
-                    message: `Delete "${demo.name}"? This cannot be undone.`,
-                    primaryAction: {
-                      title: "Delete",
-                      style: Alert.ActionStyle.Destructive,
-                    },
-                  });
-                  if (!shouldDelete) {
-                    return;
-                  }
-                  const updated = demos.filter((item) => item.id !== demo.id);
-                  await saveDemos(updated);
-                  if (activeDemoId === demo.id) {
-                    await clearActiveState();
-                  }
-                  await refresh();
-                  await showToast({ style: Toast.Style.Success, title: "Demo deleted" });
-                }}
-              />
-            </ActionPanel>
-          }
-        />
-      ))}
+      {pinnedDemos.length > 0 && (
+        <List.Section title="Pinned">{pinnedDemos.map((demo, index) => renderDemoItem(demo, index))}</List.Section>
+      )}
+      {unpinnedDemos.length > 0 && (
+        <List.Section title="Demos">
+          {unpinnedDemos.map((demo, index) => renderDemoItem(demo, index + pinnedCount))}
+        </List.Section>
+      )}
       <List.EmptyView
         title="No demos yet"
         description="Create a demo to start adding snippets."
@@ -190,6 +265,7 @@ function DemoForm({
                   id: randomUUID(),
                   name: trimmed,
                   snippets: [],
+                  pinned: false,
                   createdAt: now,
                   updatedAt: now,
                 };
@@ -205,7 +281,7 @@ function DemoForm({
                     : item,
                 );
               }
-              await saveDemos(updated);
+              await saveDemos(orderDemos(updated));
               await onSave();
               pop();
             }}
@@ -565,7 +641,11 @@ function ImportLinesForm({ demoId, onSave }: { demoId: string; onSave: () => Pro
   );
 }
 
-async function persistDemoChanges(demoId: string, demos: Demo[], updates: Partial<Pick<Demo, "name" | "snippets">>) {
+async function persistDemoChanges(
+  demoId: string,
+  demos: Demo[],
+  updates: Partial<Pick<Demo, "name" | "snippets" | "pinned">>,
+) {
   const now = Date.now();
   const updated = demos.map((demo) =>
     demo.id === demoId
@@ -577,6 +657,26 @@ async function persistDemoChanges(demoId: string, demos: Demo[], updates: Partia
       : demo,
   );
   await saveDemos(updated);
+}
+
+function orderDemos(demos: Demo[]): Demo[] {
+  const pinned: Demo[] = [];
+  const unpinned: Demo[] = [];
+  for (const demo of demos) {
+    if (demo.pinned) {
+      pinned.push(demo);
+    } else {
+      unpinned.push(demo);
+    }
+  }
+  return [...pinned, ...unpinned];
+}
+
+function moveDemo(demos: Demo[], fromIndex: number, toIndex: number): Demo[] {
+  const updated = [...demos];
+  const [item] = updated.splice(fromIndex, 1);
+  updated.splice(toIndex, 0, item);
+  return updated;
 }
 
 function moveSnippet(snippets: Snippet[], fromIndex: number, toIndex: number): Snippet[] {

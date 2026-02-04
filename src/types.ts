@@ -9,6 +9,7 @@ export type Demo = {
   id: string;
   name: string;
   snippets: Snippet[];
+  pinned?: boolean;
   createdAt: number;
   updatedAt: number;
 };
