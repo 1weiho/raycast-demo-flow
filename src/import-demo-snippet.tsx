@@ -121,7 +121,7 @@ function normalizeSnippets(input: unknown): Snippet[] {
   }
   const now = Date.now();
   return input
-    .map((item) => {
+    .map((item): Snippet | null => {
       if (typeof item === "string") {
         return { id: randomUUID(), text: item, createdAt: now, updatedAt: now };
       }
