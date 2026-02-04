@@ -31,5 +31,4 @@ export default async function PreviousSnippet() {
   const snippet = demo.snippets[previousIndex];
   await Clipboard.paste(snippet.text);
   await setActiveState({ demoId: demo.id, index: previousIndex });
-  await showHUD(`Pasted snippet ${previousIndex + 1}/${demo.snippets.length}`);
 }

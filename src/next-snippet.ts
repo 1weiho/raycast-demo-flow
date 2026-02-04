@@ -34,10 +34,8 @@ export default async function NextSnippet() {
   const nextIndex = state.index + 1;
   if (nextIndex >= demo.snippets.length) {
     await clearActiveState();
-    await showHUD("Pasted last snippet. Demo finished.");
     return;
   }
 
   await setActiveState({ demoId: demo.id, index: nextIndex });
-  await showHUD(`Pasted snippet ${nextIndex}/${demo.snippets.length}`);
 }
