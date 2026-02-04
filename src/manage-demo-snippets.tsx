@@ -107,7 +107,7 @@ export default function ManageDemoSnippets() {
                 onAction={async () => {
                   const shouldDelete = await confirmAlert({
                     title: "Delete demo",
-                    message: `Delete \"${demo.name}\"? This cannot be undone.`,
+                    message: `Delete "${demo.name}"? This cannot be undone.`,
                     primaryAction: {
                       title: "Delete",
                       style: Alert.ActionStyle.Destructive,
