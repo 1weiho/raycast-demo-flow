@@ -45,11 +45,7 @@ export default function ManageDemoSnippets() {
           key={demo.id}
           title={demo.name}
           subtitle={`${demo.snippets.length} snippet${demo.snippets.length === 1 ? "" : "s"}`}
-          accessories={
-            activeDemoId === demo.id
-              ? [{ icon: Icon.Play, tooltip: "Active Demo" }]
-              : undefined
-          }
+          accessories={activeDemoId === demo.id ? [{ icon: Icon.Play, tooltip: "Active Demo" }] : undefined}
           actions={
             <ActionPanel>
               <Action.Push
@@ -180,11 +176,7 @@ function DemoForm({
                 });
                 return;
               }
-              if (
-                demos.some(
-                  (item) => item.name.toLowerCase() === trimmed.toLowerCase() && item.id !== demo?.id
-                )
-              ) {
+              if (demos.some((item) => item.name.toLowerCase() === trimmed.toLowerCase() && item.id !== demo?.id)) {
                 await showToast({
                   style: Toast.Style.Failure,
                   title: "Demo name already exists",
@@ -210,7 +202,7 @@ function DemoForm({
                         name: trimmed,
                         updatedAt: now,
                       }
-                    : item
+                    : item,
                 );
               }
               await saveDemos(updated);
@@ -221,14 +213,7 @@ function DemoForm({
         </ActionPanel>
       }
     >
-      <Form.TextField
-        id="name"
-        title="Demo Name"
-        placeholder="Live Demo"
-        value={name}
-        onChange={setName}
-        autoFocus
-      />
+      <Form.TextField id="name" title="Demo Name" placeholder="Live Demo" value={name} onChange={setName} autoFocus />
     </Form>
   );
 }
@@ -343,7 +328,7 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
                 }}
               />
               <Action
-                title="Move Up"
+                title="Move up"
                 icon={Icon.ArrowUp}
                 shortcut={{ modifiers: ["opt", "cmd"], key: "arrowUp" }}
                 onAction={async () => {
@@ -502,7 +487,7 @@ function SnippetForm({
                 updatedSnippets = [...demo.snippets, newSnippet];
               } else {
                 updatedSnippets = demo.snippets.map((item) =>
-                  item.id === snippet?.id ? { ...item, text, updatedAt: now } : item
+                  item.id === snippet?.id ? { ...item, text, updatedAt: now } : item,
                 );
               }
               await persistDemoChanges(demo.id, demos, { snippets: updatedSnippets });
@@ -580,11 +565,7 @@ function ImportLinesForm({ demoId, onSave }: { demoId: string; onSave: () => Pro
   );
 }
 
-async function persistDemoChanges(
-  demoId: string,
-  demos: Demo[],
-  updates: Partial<Pick<Demo, "name" | "snippets">>
-) {
+async function persistDemoChanges(demoId: string, demos: Demo[], updates: Partial<Pick<Demo, "name" | "snippets">>) {
   const now = Date.now();
   const updated = demos.map((demo) =>
     demo.id === demoId
@@ -593,7 +574,7 @@ async function persistDemoChanges(
           ...updates,
           updatedAt: now,
         }
-      : demo
+      : demo,
   );
   await saveDemos(updated);
 }

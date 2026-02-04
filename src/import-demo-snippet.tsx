@@ -1,11 +1,4 @@
-import {
-  Action,
-  ActionPanel,
-  Form,
-  Icon,
-  Toast,
-  showToast,
-} from "@raycast/api";
+import { Action, ActionPanel, Form, Icon, Toast, showToast } from "@raycast/api";
 import { readFile } from "fs/promises";
 import { randomUUID } from "crypto";
 import { useState } from "react";
@@ -72,12 +65,7 @@ export default function ImportDemoSnippet() {
         </ActionPanel>
       }
     >
-      <Form.FilePicker
-        id="file"
-        title="JSON File"
-        allowMultipleSelection={false}
-        canChooseDirectories={false}
-      />
+      <Form.FilePicker id="file" title="JSON File" allowMultipleSelection={false} canChooseDirectories={false} />
       <Form.TextArea
         id="jsonText"
         title="Or Paste JSON"
