@@ -73,6 +73,12 @@ export default function ManageDemoSnippets() {
                 }}
               />
               <Action.Push
+                title="Create Demo"
+                icon={Icon.Plus}
+                shortcut={{ modifiers: ["cmd"], key: "n" }}
+                target={<DemoForm mode="create" demos={demos} onSave={refresh} />}
+              />
+              <Action.Push
                 title="Rename Demo"
                 icon={Icon.Pencil}
                 target={<DemoForm mode="rename" demo={demo} demos={demos} onSave={refresh} />}
@@ -101,6 +107,7 @@ export default function ManageDemoSnippets() {
                 title="Delete Demo"
                 icon={Icon.Trash}
                 style={Action.Style.Destructive}
+                shortcut={{ modifiers: ["ctrl"], key: "x" }}
                 onAction={async () => {
                   const shouldDelete = await confirmAlert({
                     title: "Delete demo",
@@ -121,12 +128,6 @@ export default function ManageDemoSnippets() {
                   await refresh();
                   await showToast({ style: Toast.Style.Success, title: "Demo deleted" });
                 }}
-              />
-              <Action.Push
-                title="Create Demo"
-                icon={Icon.Plus}
-                shortcut={{ modifiers: ["cmd"], key: "n" }}
-                target={<DemoForm mode="create" demos={demos} onSave={refresh} />}
               />
             </ActionPanel>
           }
@@ -297,6 +298,21 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
                   />
                 }
               />
+              <Action.Push
+                title="Add Snippet"
+                icon={Icon.Plus}
+                shortcut={{ modifiers: ["cmd"], key: "n" }}
+                target={
+                  <SnippetForm
+                    mode="create"
+                    demoId={demo?.id ?? ""}
+                    onSave={async () => {
+                      await load();
+                      await onUpdate();
+                    }}
+                  />
+                }
+              />
               <Action
                 title="Delete Snippet"
                 icon={Icon.Trash}
@@ -379,21 +395,6 @@ function DemoSnippetsView({ demoId, onUpdate }: { demoId: string; onUpdate: () =
                   await load();
                   await onUpdate();
                 }}
-              />
-              <Action.Push
-                title="Add Snippet"
-                icon={Icon.Plus}
-                shortcut={{ modifiers: ["cmd"], key: "n" }}
-                target={
-                  <SnippetForm
-                    mode="create"
-                    demoId={demo?.id ?? ""}
-                    onSave={async () => {
-                      await load();
-                      await onUpdate();
-                    }}
-                  />
-                }
               />
               <Action.Push
                 title="Import Snippets from Lines"
