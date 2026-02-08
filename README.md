@@ -1,6 +1,7 @@
 # Demo Flow
 
-Demo Flow is a Raycast extension that lets you organize demo snippets and quickly paste the next/previous snippet during a walkthrough.
+Demo Flow helps you deliver smoother live demos.
+Create an ordered snippet playlist for each demo, then paste the next step with a single shortcut, no tab switching, no searching, no re-typing.
 
 **Features**
 - Create and manage demos and snippets
