@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "demo-snippet",
+  "name": "demo-flow",
   "title": "Demo Flow",
   "description": "Demo Flow is a Raycast extension that lets you organize demo snippets and quickly paste the next/previous snippet during a walkthrough.",
   "icon": "extension-icon.png",
