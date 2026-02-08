@@ -577,7 +577,7 @@ function SnippetForm({
       <Form.TextArea
         id="text"
         title="Snippet Text"
-        placeholder="php artisan migrate"
+        placeholder="console.log('hello world')"
         value={text}
         onChange={setText}
         autoFocus
@@ -632,7 +632,7 @@ function ImportLinesForm({ demoId, onSave }: { demoId: string; onSave: () => Pro
       <Form.TextArea
         id="lines"
         title="Lines"
-        placeholder="php artisan migrate\nphp artisan config:clear\nphp artisan test"
+        placeholder="Enter one snippet per line to import multiple snippets"
         value={value}
         onChange={setValue}
         autoFocus

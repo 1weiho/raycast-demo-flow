@@ -69,7 +69,7 @@ export default function ImportDemoSnippet() {
       <Form.TextArea
         id="jsonText"
         title="Or Paste JSON"
-        placeholder='{"name":"My Demo","snippets":["npm install","npm run dev"]}'
+        placeholder="Paste exported demo JSON"
       />
     </Form>
   );
