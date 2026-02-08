@@ -66,11 +66,7 @@ export default function ImportDemoSnippet() {
       }
     >
       <Form.FilePicker id="file" title="JSON File" allowMultipleSelection={false} canChooseDirectories={false} />
-      <Form.TextArea
-        id="jsonText"
-        title="Or Paste JSON"
-        placeholder="Paste exported demo JSON"
-      />
+      <Form.TextArea id="jsonText" title="Or Paste JSON" placeholder="Paste exported demo JSON" />
     </Form>
   );
 }
